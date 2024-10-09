@@ -1,9 +1,5 @@
-import axios from "axios";
-import { useQuery } from "react-query";
-
-const fetchSuperHeroes = () => {
-  return axios.get("http://localhost:4000/superheroes");
-};
+import { Link } from "react-router-dom";
+import { useSuperHeroData } from "../hooks/useSuperHeroesData";
 
 export const RQSuperHeroes = () => {
   const onSuccess = (data) => {
@@ -14,18 +10,8 @@ export const RQSuperHeroes = () => {
     console.log("Perform side effect after ecnoutnering error", data);
   };
 
-  const { isLoading, data, isError, error, isFetching, refetch } = useQuery(
-    "super-heroes",
-    fetchSuperHeroes,
-    {
-      onSuccess,
-      onError,
-      select: (data) => {
-        const superHeroNames = data.data.map((hero) => hero.name);
-        return superHeroNames;
-      },
-    }
-  );
+  const { isLoading, data, isError, error, isFetching, refetch } =
+    useSuperHeroData(onSuccess, onError);
 
   // console.log({ isLoading, isFetching });
 
@@ -41,12 +27,14 @@ export const RQSuperHeroes = () => {
     <>
       <h2>React Query Super Heroes Page</h2>;
       <button onClick={refetch}>Fetch heroes</button>
-      {/* {data?.data.map((hero) => (
-        <div key={hero.name}>{hero.name}</div>
-      ))} */}
-      {data.map((heroName) => (
-        <div key={heroName}>{heroName}</div>
+      {data?.data.map((hero) => (
+        <div key={hero.id}>
+          <Link to={`/rq-super-heroes/${hero.id}`}>{hero.name}</Link>
+        </div>
       ))}
+      {/* {data.map((heroName) => (
+        <div key={heroName}>{heroName}</div>
+      ))} */}
     </>
   );
 };
